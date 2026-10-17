@@ -16,7 +16,9 @@ job=HFSSAutomationBridge('generate','build',config(t,'offline'),vivaldiBuilderDe
 s=HFSSAutomationBridge('poll',job);
 verifyEqual(t,s.state,'SCRIPT_GENERATED'); verifyFalse(t,s.success); verifyFalse(t,s.terminal);
 verifyFalse(t,isfile(job.projectPath)); verifyTrue(t,isfile(job.scriptPath));
-verifyTrue(t,isfile([job.projectPath '.builder.json']));
+verifyFalse(t,isfile([job.projectPath '.builder.json']));
+again=HFSSAutomationBridge('generate','build',config(t,'offline'),vivaldiBuilderDefaultParams());
+verifyNotEqual(t,again.scriptPath,job.scriptPath);
 end
 function testIndependentVariablesPrecedeDependentExpressions(t)
 job=HFSSAutomationBridge('generate','build',config(t,'variables'),vivaldiBuilderDefaultParams());
@@ -85,14 +87,12 @@ function result=position(s,needle)
 result=strfind(s,needle); assert(~isempty(result),'Missing expected script text.'); result=result(1);
 end
 function out=readScript(file)
-fid=fopen(file,'r','n','UTF-16LE'); c=onCleanup(@()fclose(fid)); %#ok<NASGU>
-out=erase(fscanf(fid,'%c'),char(65279));
+out=HFSSRuntimeSupport.readUTF16(file);
 end
 function write(file,text)
 fid=fopen(file,'w','n','UTF-8'); c=onCleanup(@()fclose(fid)); %#ok<NASGU>
 fprintf(fid,'%s',text);
 end
 function writeStatus(job,text)
-fid=fopen(job.statusPath,'w','n','UTF-16LE'); c=onCleanup(@()fclose(fid)); %#ok<NASGU>
-fwrite(fid,65279,'uint16'); fprintf(fid,'%s\r\n',text);
+HFSSRuntimeSupport.writeUTF16(job.statusPath,[text sprintf('\r\n')]);
 end

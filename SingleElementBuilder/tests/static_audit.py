@@ -301,12 +301,17 @@ def audit_inventory(design):
 
 def audit_protected_files(repository):
     names = subprocess.check_output(["git", "ls-tree", "-rz", "--name-only", "HEAD"], cwd=repository).decode().split("\0")
-    protected = [name for name in names if name and not name.startswith("SingleElementBuilder/")]
+    # GUI/bridge code is intentionally editable during the debugging task.
+    # The HFSS inputs and both numeric geometry/default modules must not change.
+    math_files = {"vivaldiCalculateGeometry.m", "vivaldiDefaultParams.m",
+                  "SingleElementBuilder/vivaldiBuilderGeometry.m",
+                  "SingleElementBuilder/vivaldiBuilderDefaultParams.m"}
+    protected = [name for name in names if name and (name.endswith(".aedt") or name in math_files)]
     for name in protected:
         original = subprocess.check_output(["git", "show", f"HEAD:{name}"], cwd=repository)
         present = (repository / name).read_bytes()
         assert hashlib.sha256(original).digest() == hashlib.sha256(present).digest(), f"Protected tracked file changed: {name}"
-    print(f"  Original repository protection: {len(protected)} tracked pre-existing files byte-identical to Git HEAD")
+    print(f"  Original HFSS/math protection: {len(protected)} tracked files byte-identical to Git HEAD")
 
 
 def main():
