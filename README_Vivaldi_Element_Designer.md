@@ -1,8 +1,21 @@
 # Vivaldi Element Designer Pro
 
-Ứng dụng MATLAB chỉnh **một phần tử Vivaldi dual-polarized** dựa trên biến của `Vivaldi_23_9_2026.aedt`. Công cụ tạo mảng `Phased_Array_GUI_Linker.m` và dự án gốc được giữ nguyên.
+Ứng dụng MATLAB chỉnh **một phần tử Vivaldi dual-polarized**, mặc định chọn nguồn
+`SingleElementBuilder/reference/17_10_2026_vivaldi.aedt`. Các công thức không đổi;
+preview cũ vẫn là sơ đồ operand, không phải CAD. Nút **Build Antenna** gọi bộ dựng
+mới trong `SingleElementBuilder/`. Tất cả dữ liệu AEDT gốc được giữ nguyên.
 
-**Trạng thái bàn giao:** đã viết mã GUI, công thức, tìm chiều dài mục tiêu, kiểm tra tham số, cấu hình JSON, bridge HFSS, nạp CSV và xuất dữ liệu. Kiểm tra cú pháp và đối chiếu số học độc lập đã chạy trên Linux. **Chưa chạy MATLAB GUI, bộ test MATLAB hoặc HFSS thực tế** vì môi trường không có MATLAB/Ansys. Không coi đây là bản đã nghiệm thu trên máy đích. Chi tiết cấu trúc mô hình nằm trong [MODEL_ANALYSIS_Vivaldi.md](MODEL_ANALYSIS_Vivaldi.md); kết quả kiểm tra trong [VALIDATION_Vivaldi.md](VALIDATION_Vivaldi.md).
+Bản sửa lỗi GUI/cleanup, đường dẫn HFSS và báo cáo kiểm tra A–H:
+[DEBUG_REPORT.md](DEBUG_REPORT.md). Chưa có kết quả chạy MATLAB desktop/HFSS thật.
+
+Luồng cơ bản không cần JSON: mở GUI → nhập kích thước → **Calculate** → chọn
+`ansysedt.exe` → **Build Antenna**. Save/Load Configuration chỉ là tiện ích phụ.
+Đường dẫn tham khảo: `D:\Program Files\AnsysEM\AnsysEM21.2\Win64\ansysedt.exe`.
+Export Preview dùng figure tạm, không thay đổi GUI đang hiển thị hoặc gọi refresh
+từ onCleanup. Khi đổi thickness mà lịch sử nguồn còn literal 2mm ở cutter thứ hai,
+Update sẽ từ chối; dùng Build Antenna để dựng mới thay vì sửa công thức nguồn.
+
+**Trạng thái bàn giao:** đã viết mã GUI, công thức, tìm chiều dài mục tiêu, kiểm tra tham số, cấu hình JSON, bridge HFSS, nạp CSV và xuất dữ liệu. Kiểm tra cú pháp và đối chiếu số học độc lập đã chạy trên Linux. **Chưa chạy MATLAB GUI, bộ test MATLAB hoặc HFSS thực tế** vì môi trường không có MATLAB/Ansys. Không coi đây là bản đã nghiệm thu trên máy đích. Chi tiết cấu trúc mô hình nằm trong [đặc tả ngày 17/10](SingleElementBuilder/MODEL_RECONSTRUCTION_SPEC.md); kết quả kiểm tra trong [VALIDATION_Vivaldi.md](VALIDATION_Vivaldi.md).
 
 ## Khởi động
 
@@ -73,7 +86,7 @@ Save/Load Configuration lưu các biến độc lập vào JSON có schema `viva
 5. Đóng dự án đầu vào trong HFSS trước khi cập nhật để tránh lock/phiên làm việc có thay đổi chưa lưu. Không xóa lock khi chưa biết nguyên nhân.
 6. **Connect HFSS** chạy script ở tiến trình AEDT riêng và đọc phiên bản COM. Kết nối desktop không chứng minh có license solver; lỗi license khi mở/giải được ghi theo phản hồi API.
 
-Bridge dùng `-RunScript` và ProgID `Ansoft.ElectronicsDesktop`. Nếu máy có nhiều phiên bản, COM có thể được đăng ký cho phiên bản khác executable đã chọn. Luôn xem `GetVersion` trong log và xác nhận COM registration theo cài đặt Ansys. Không tự đổi registry hay cấp license. Các chữ ký API được triển khai cho workflow 2021 R2 nhưng chưa chạy đối chiếu với AEDT thật.
+Bridge dùng `-RunScript` và ProgID `Ansoft.ElectronicsDesktop.2021.2`. Nếu máy có nhiều phiên bản, COM có thể được đăng ký cho phiên bản khác executable đã chọn. Luôn xem `GetVersion` trong log và xác nhận COM registration theo cài đặt Ansys. Không tự đổi registry hay cấp license. Các chữ ký API được triển khai cho workflow 2021 R2 nhưng chưa chạy đối chiếu với AEDT thật.
 
 ### Tạo bản sao và cập nhật
 

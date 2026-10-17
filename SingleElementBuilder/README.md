@@ -1,5 +1,9 @@
 # Vivaldi Dual-Pol Builder Pro
 
+Bản sửa lỗi cleanup/callback, đường dẫn HFSS và kiểm tra A–H mới nhất:
+[DEBUG_REPORT.md](../DEBUG_REPORT.md). Hai GUI đều có Calculate; không cần JSON
+để nhập kích thước hoặc Build. Các file nguồn HFSS và công thức/CAD không đổi.
+
 **Implemented — HFSS Validation Pending.** Công cụ MATLAB dành cho **một phần tử Vivaldi dual-pol**, dựng CAD mới bằng HFSS Automation API hoặc cập nhật một project có sẵn qua bản sao bảo vệ. Trong môi trường phát triển hiện tại đã kiểm tra dữ liệu nguồn, số học và cú pháp; chưa chạy MATLAB, Windows COM, HFSS Validate hay solver. Xem [VALIDATION_REPORT.md](VALIDATION_REPORT.md) để phân biệt chức năng đã triển khai và bằng chứng đã thực thi.
 
 ## Khởi chạy
@@ -63,7 +67,7 @@ Chọn **Update Existing Project**, chỉ định `.aedt`, tên output mới và
 
 Mô hình nguồn có Move của `cable_mid_1` lưu literal `2mm`. Update với thickness khác2 bị từ chối khi phát hiện lịch sử không liên kết này; dùng **Build From Scratch** để dựng phiên bản đã parameter hóa. Không thể mặc định mọi file `.aedt` tùy ý có công thức/đồ thị đúng nguồn.
 
-Các thao tác độc lập **Validate/Save/Analyze/Reports** chỉ sửa project có hồ sơ cạnh file `<project>.aedt.builder.json` do builder tạo. Hồ sơ này là dấu sở hữu bản làm việc, **không phải chứng nhận build thành công**. Để thao tác với project bên ngoài, dùng Update Existing tạo bản sao trước. Giữ file `.aedt` cùng sidecar khi quản lý bản làm việc và không tự tạo sidecar cho tệp nguồn để bỏ qua bảo vệ.
+Các thao tác độc lập **Validate/Save/Analyze/Reports** chỉ sửa project có hồ sơ cạnh file `<project>.aedt.builder.json` do builder tự ghi sau acknowledgment và đọc lại AEDT thành công. Chỉ sinh script offline không tạo sidecar và không chặn lần Build tiếp theo. Hồ sơ này là dấu sở hữu bản làm việc, không thay thế kiểm tra CAD. Để thao tác với project bên ngoài, dùng Update Existing tạo bản sao trước. Giữ file `.aedt` cùng sidecar khi quản lý bản làm việc và không tự tạo sidecar cho tệp nguồn để bỏ qua bảo vệ. Người dùng không phải nạp/lưu cấu hình JSON để chỉnh anten.
 
 Nếu thay tham số/profile/band sau build, GUI đánh dấu **STALE MODEL** và yêu cầu Build/Update phù hợp trước Analyze. Timeout dừng theo dõi, không tắt HFSS; dùng **Recheck timed-out HFSS job**, xem desktop/log và tránh khởi chạy job trùng. Khi lỗi, bản làm việc một phần được giữ để chẩn đoán, không được gắn nhãn build hoàn tất.
 
